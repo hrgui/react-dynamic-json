@@ -1,0 +1,23 @@
+name: Release
+on:
+  release:
+    types: [created]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+          registry-url: "https://registry.npmjs.org"
+      - name: Build
+        run: |
+          yarn
+          yarn build
+        env:
+          CI: true
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
