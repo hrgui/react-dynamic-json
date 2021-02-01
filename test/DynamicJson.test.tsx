@@ -11,6 +11,14 @@ describe('DynamicJson', () => {
     expect(cpt).not.toBeNull();
   });
 
+  it('renders nothing if component is ""', () => {
+    const { queryByText } = render(
+      <DynamicJson component="" props={{ children: ['Hello World'] }} />
+    );
+    const cpt = queryByText('Hello World');
+    expect(cpt).toBeNull();
+  });
+
   describe('Nested children', () => {
     it('renders Hello World and Hello World 2 if given Hello World as props.children and we pass in another DynamicJson one ', () => {
       const { getByText } = render(

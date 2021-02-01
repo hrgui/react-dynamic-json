@@ -16,8 +16,13 @@ export interface DynamicJsonProps {
 export function DynamicJson({ component, props, registry }: DynamicJsonProps) {
   const Component = registry && registry[component];
 
-  if (!Component && isComponentStringCustom(component)) {
-    console.error('Dynamic', component, props, registry);
+  if (!component || (!Component && isComponentStringCustom(component))) {
+    console.error(
+      'DynamicJson was sent an invalid component. Returning null.',
+      component,
+      props,
+      registry
+    );
     return null;
   }
 
