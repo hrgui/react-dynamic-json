@@ -22,7 +22,7 @@ export interface DynamicJsonProps {
   /** If using custom components, provide a registry to lookup */
   registry?: { [name: string]: any };
   /** If true, dangerouslySetInnerHTML is allowed as a prop */
-  allowDangerouslySetInnerHTML: boolean;
+  allowDangerouslySetInnerHTML?: boolean;
 }
 
 export function DynamicJson({
