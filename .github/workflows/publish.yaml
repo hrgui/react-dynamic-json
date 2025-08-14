@@ -1,0 +1,24 @@
+name: Bun - Create and Publish Node.js Package
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish'
+        required: true
+        type: string
+        default: '0.0.0'
+      dry_run:
+        description: 'Dry run'
+        required: false
+        type: boolean
+        default: false
+  release:
+    types: [published]
+jobs:
+  build-publish:
+    uses: hrgui/my-personal-gh-workflows/.github/workflows/bun_publish.yml@main
+    with:
+      version: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
+      dry_run: ${{ inputs.dry_run || false }}
+    secrets:
+      node_auth_token: ${{ secrets.NPM_TOKEN }}
