@@ -7,11 +7,12 @@ export default defineConfig(({ command }) => {
   return {
     plugins: [
       react(),
-      dts({
-        insertTypesEntry: true,
-        bundleTypes: true,
-      }),
-    ],
+      !process.env.STORYBOOK &&
+        dts({
+          insertTypesEntry: true,
+          bundleTypes: true,
+        }),
+    ].filter(Boolean),
     base: './',
     test: {
       environment: 'jsdom',
