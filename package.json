@@ -2,7 +2,7 @@
   "name": "@hrgui/react-dynamic-json",
   "author": "Harman Goei",
   "type": "module",
-  "version": "1.0.0",
+  "version": "0.0.0-publish-with-github-actions-please",
   "license": "MIT",
   "main": "dist/react-dynamic-json.umd.js",
   "module": "dist/react-dynamic-json.es.js",
