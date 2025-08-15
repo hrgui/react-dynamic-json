@@ -1,14 +1,17 @@
-import 'react-app-polyfill/ie11';
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { Thing } from '../.';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { DynamicJson } from '../src/index';
 
 const App = () => {
   return (
     <div>
-      <Thing />
+      <DynamicJson component="div" props={{ children: ['Hello World'] }} />
     </div>
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App />);
+
+//ReactDOM.render(<App />, document.getElementById('root'));

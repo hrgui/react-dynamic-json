@@ -1,21 +1,20 @@
 import React from 'react';
-import { render } from '@testing-library/react';
-import { Default as DynamicJson } from '../stories/DynamicJson.stories';
+import { render, screen } from '@testing-library/react';
+import { DynamicJson } from '../';
+import { describe, it, expect } from 'vitest';
 
 describe('DynamicJson', () => {
   it('renders Hello World if given Hello World as props.children', () => {
-    const { getByText } = render(
+    render(
       <DynamicJson component="div" props={{ children: ['Hello World'] }} />
     );
-    const cpt = getByText('Hello World');
+    const cpt = screen.getByText('Hello World');
     expect(cpt).not.toBeNull();
   });
 
   it('renders nothing if component is ""', () => {
-    const { queryByText } = render(
-      <DynamicJson component="" props={{ children: ['Hello World'] }} />
-    );
-    const cpt = queryByText('Hello World');
+    render(<DynamicJson component="" props={{ children: ['Hello World'] }} />);
+    const cpt = screen.queryByText('Hello World');
     expect(cpt).toBeNull();
   });
 
@@ -55,7 +54,7 @@ describe('DynamicJson', () => {
       expect(queryByText('Hello World')).toBeNull();
     });
 
-    it('renders null if the component doesnt exist', () => {
+    it('renders a value if the component doesnt exist', () => {
       const { queryByText } = render(
         <DynamicJson
           component="Exist"
