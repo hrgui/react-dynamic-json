@@ -12,6 +12,14 @@ on:
         required: false
         type: boolean
         default: false
+      npm_tag:
+        description: 'NPM Tag to use'
+        required: false
+        type: choice
+        options:
+          - latest
+          - prerelease
+        default: latest
   release:
     types: [published]
 jobs:
@@ -20,5 +28,6 @@ jobs:
     with:
       version: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
       dry_run: ${{ inputs.dry_run || false }}
+      npm_tag: ${{ inputs.npm_tag }}
     secrets:
       node_auth_token: ${{ secrets.NPM_TOKEN }}
