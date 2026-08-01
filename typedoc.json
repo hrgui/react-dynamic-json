@@ -1,0 +1,19 @@
+{
+  "entryPoints": ["src/index.tsx"],
+  "out": "docs",
+  "tsconfig": "tsconfig.json",
+  "includeVersion": true,
+  "exclude": ["**/__test__/**", "**/*.test.tsx", "**/*.stories.tsx"],
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "disableSources": true,
+  "name": "react-dynamic-json",
+  "readme": "none",
+  "plugin": ["typedoc-plugin-markdown"],
+  "gitRevision": "main",
+  "entryFileName": "README.md",
+  "hideBreadcrumbs": true,
+  "publicPath": ".",
+  "useHTMLAnchors": true
+}

@@ -166,7 +166,9 @@ export function DynamicJson({
       children = [];
     }
 
-    children = children
+    const childItems = children as Array<string | DynamicJsonProps>;
+
+    children = childItems
       .map((child: string | DynamicJsonProps, i: number) => {
         if (typeof child === 'string') {
           return child;
@@ -182,7 +184,10 @@ export function DynamicJson({
           />
         );
       })
-      .filter((child) => child !== null && child !== undefined);
+      .filter(
+        (child): child is string | React.ReactElement =>
+          child !== null && child !== undefined
+      );
   }
 
   return React.createElement(
