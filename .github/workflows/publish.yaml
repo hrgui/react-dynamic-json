@@ -1,4 +1,4 @@
-name: Publish package to npm
+name: Stage publish package to npm
 on:
   workflow_dispatch:
     inputs:
@@ -50,8 +50,8 @@ jobs:
           TAG=${{ github.event_name == 'workflow_dispatch' && inputs.npm_tag || 'latest' }}
           DRY_RUN=${{ inputs.dry_run || 'false' }}
           if [[ "${DRY_RUN}" == 'true' ]]; then
-            npm publish --tag "${TAG}" --dry-run
+            npm stage publish --tag "${TAG}" --dry-run
           else
-            npm publish --tag "${TAG}"
+            npm stage publish --tag "${TAG}"
           fi
         shell: bash
