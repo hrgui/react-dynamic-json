@@ -1,33 +1,48 @@
-name: Bun - Create and Publish Node.js Package
+name: Publish package to npm
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to publish'
-        required: true
-        type: string
-        default: '0.0.0'
-      dry_run:
-        description: 'Dry run'
-        required: false
-        type: boolean
-        default: false
       npm_tag:
-        description: 'NPM Tag to use'
+        description: 'NPM tag to use'
         required: false
         type: choice
         options:
           - latest
           - prerelease
         default: latest
+      dry_run:
+        description: 'Dry run'
+        required: false
+        type: boolean
+        default: false
   release:
     types: [published]
+
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
 jobs:
-  build-publish:
-    uses: hrgui/my-personal-gh-workflows/.github/workflows/bun_publish.yml@main
-    with:
-      version: ${{ github.event_name == 'release' && github.event.release.tag_name || inputs.version }}
-      dry_run: ${{ inputs.dry_run || false }}
-      npm_tag: ${{ inputs.npm_tag }}
-    secrets:
-      node_auth_token: ${{ secrets.NPM_TOKEN }}
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install
+      - run: bun run build
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          token: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm
+        run: |
+          TAG=${{ github.event_name == 'workflow_dispatch' && inputs.npm_tag || 'latest' }}
+          DRY_RUN=${{ inputs.dry_run || 'false' }}
+          if [[ "${DRY_RUN}" == 'true' ]]; then
+            npm publish --tag "${TAG}" --dry-run
+          else
+            npm publish --tag "${TAG}"
+          fi
+        shell: bash
