@@ -133,8 +133,53 @@ export const MustacheArrayValue: StoryObj<DynamicJsonProps> = {
         ArrayRenderer: ({ items }: any) => (
           <div>
             {items.map((item: string) => (
-              <li>{item}</li>
+              <li key={item}>{item}</li>
             ))}
+          </div>
+        ),
+      }}
+    />
+  ),
+};
+
+export const MustacheCondition: StoryObj<DynamicJsonProps> = {
+  render: () => (
+    <DynamicJson
+      component="ExactUser"
+      props={{
+        userId: '{{user.id}}',
+        children: [
+          {
+            component: 'p',
+            condition: 'user.name',
+            props: {
+              children: ['Hello {{user.name}}!'],
+            },
+          },
+          {
+            component: 'p',
+            condition: 'user.active',
+            props: {
+              children: ['Active user'],
+            },
+          },
+          {
+            component: 'p',
+            condition: 'user.role === "developer"',
+            props: {
+              children: ['Developer access granted'],
+            },
+          },
+        ],
+      }}
+      variables={{
+        user: { id: 42, name: 'Alice', active: true, role: 'developer' },
+      }}
+      registry={{
+        ExactUser: ({ userId, children }: any) => (
+          <div>
+            <div>{`userId(${typeof userId}): ${userId}`}</div>
+            {children}
           </div>
         ),
       }}

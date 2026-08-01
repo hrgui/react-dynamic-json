@@ -108,5 +108,49 @@ describe('DynamicJson', () => {
 
       expect(getByText('number')).not.toBeNull();
     });
+
+    it('skips child objects when condition evaluates false', () => {
+      const { queryByText } = render(
+        <DynamicJson
+          component="div"
+          props={{
+            children: [
+              {
+                component: 'span',
+                condition: 'user.active',
+                props: {
+                  children: ['Active user'],
+                },
+              },
+            ],
+          }}
+          variables={{ user: { active: false } }}
+        />
+      );
+
+      expect(queryByText('Active user')).toBeNull();
+    });
+
+    it('renders child objects when condition evaluates true', () => {
+      const { getByText } = render(
+        <DynamicJson
+          component="div"
+          props={{
+            children: [
+              {
+                component: 'span',
+                condition: 'user.active',
+                props: {
+                  children: ['Active user'],
+                },
+              },
+            ],
+          }}
+          variables={{ user: { active: true } }}
+        />
+      );
+
+      expect(getByText('Active user')).not.toBeNull();
+    });
   });
 });

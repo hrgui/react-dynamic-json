@@ -1,5 +1,6 @@
 import React from 'react';
 import mustache from 'mustache';
+import { compileExpression } from 'filtrex';
 
 export function isComponentStringCustom(componentStr: string) {
   const firstLetter = componentStr.charCodeAt(0);
@@ -24,6 +25,8 @@ export interface DynamicJsonProps {
   registry?: { [name: string]: any };
   /** If true, dangerouslySetInnerHTML is allowed as a prop */
   allowDangerouslySetInnerHTML?: boolean;
+  /** If provided, the component is rendered only when the condition evaluates truthy */
+  condition?: string | boolean;
   /** Variables used for Mustache interpolation */
   variables?: { [name: string]: any };
 }
@@ -60,6 +63,37 @@ function resolveExactMatch(
   return { matched: true, value: getPathValue(variables, match[1]) };
 }
 
+function evaluateCondition(
+  condition: string | boolean | undefined,
+  variables?: Record<string, any>
+): boolean {
+  if (condition === undefined) {
+    return true;
+  }
+
+  if (typeof condition === 'boolean') {
+    return condition;
+  }
+
+  if (!condition.trim()) {
+    return false;
+  }
+
+  try {
+    const evaluator = compileExpression(condition, {
+      customProp(name, getter, obj) {
+        if (name.includes('.')) {
+          return getPathValue(obj, name);
+        }
+        return getter(name);
+      },
+    });
+    return Boolean(evaluator(variables || {}));
+  } catch {
+    return false;
+  }
+}
+
 function renderTemplateValue(value: any, variables?: Record<string, any>): any {
   if (typeof value === 'string') {
     const exact = resolveExactMatch(value, variables);
@@ -78,7 +112,10 @@ function renderTemplateValue(value: any, variables?: Record<string, any>): any {
     const result: Record<string, any> = {};
     for (const key in value) {
       if (Object.prototype.hasOwnProperty.call(value, key)) {
-        result[key] = renderTemplateValue(value[key], variables);
+        result[key] =
+          key === 'condition'
+            ? value[key]
+            : renderTemplateValue(value[key], variables);
       }
     }
     return result;
@@ -93,7 +130,12 @@ export function DynamicJson({
   registry,
   allowDangerouslySetInnerHTML = false,
   variables,
+  condition,
 }: DynamicJsonProps) {
+  if (!evaluateCondition(condition, variables)) {
+    return null;
+  }
+
   const renderedComponent = variables
     ? mustache.render(component, variables)
     : component;
@@ -124,21 +166,23 @@ export function DynamicJson({
       children = [];
     }
 
-    children = children.map((child: string | DynamicJsonProps, i: number) => {
-      if (typeof child === 'string') {
-        return child;
-      }
+    children = children
+      .map((child: string | DynamicJsonProps, i: number) => {
+        if (typeof child === 'string') {
+          return child;
+        }
 
-      return (
-        <DynamicJson
-          key={i}
-          {...child}
-          allowDangerouslySetInnerHTML={allowDangerouslySetInnerHTML}
-          registry={registry}
-          variables={variables}
-        />
-      );
-    });
+        return (
+          <DynamicJson
+            key={i}
+            {...child}
+            allowDangerouslySetInnerHTML={allowDangerouslySetInnerHTML}
+            registry={registry}
+            variables={variables}
+          />
+        );
+      })
+      .filter((child) => child !== null && child !== undefined);
   }
 
   return React.createElement(
