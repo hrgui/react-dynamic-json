@@ -67,4 +67,46 @@ describe('DynamicJson', () => {
       expect(queryByText('Hello World')).not.toBeNull();
     });
   });
+
+  describe('Mustache interpolation', () => {
+    it('renders interpolated values from variables', () => {
+      const { getByText } = render(
+        <DynamicJson
+          component="div"
+          props={{
+            children: [
+              'Hello {{user.name}}',
+              {
+                component: 'span',
+                props: {
+                  children: ['Role: {{user.role}}'],
+                },
+              },
+            ],
+          }}
+          variables={{ user: { name: 'Alice', role: 'developer' } }}
+        />
+      );
+
+      expect(getByText('Hello Alice')).not.toBeNull();
+      expect(getByText('Role: developer')).not.toBeNull();
+    });
+
+    it('preserves typed raw values for exact-match templates', () => {
+      const TestComponent = ({ userId }: { userId: number }) => (
+        <div>{typeof userId}</div>
+      );
+
+      const { getByText } = render(
+        <DynamicJson
+          component="TestComponent"
+          props={{ userId: '{{user.id}}' }}
+          registry={{ TestComponent }}
+          variables={{ user: { id: 42 } }}
+        />
+      );
+
+      expect(getByText('number')).not.toBeNull();
+    });
+  });
 });

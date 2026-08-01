@@ -17,6 +17,7 @@ yarn install @hrgui/react-dynamic-json
 ```
 
 ## Hello World
+
 ```tsx
 import { DynamicJson } from '@hrgui/react-dynamic-json';
 
@@ -26,6 +27,7 @@ export function App() {
 ```
 
 ## Nested children
+
 ```tsx
 import { DynamicJson } from '@hrgui/react-dynamic-json';
 
@@ -43,6 +45,57 @@ export function App() {
             },
           },
         ],
+      }}
+    />
+  );
+}
+```
+
+## Mustache interpolation
+
+```tsx
+import { DynamicJson } from '@hrgui/react-dynamic-json';
+
+export function App() {
+  return (
+    <DynamicJson
+      component="div"
+      props={{
+        children: [
+          'Hello {{user.name}}!',
+          {
+            component: 'p',
+            props: {
+              children: ['Role: {{user.role}}'],
+            },
+          },
+        ],
+      }}
+      variables={{ user: { name: 'Alice', role: 'developer' } }}
+    />
+  );
+}
+```
+
+## Exact-match typed variables
+
+```tsx
+import { DynamicJson } from '@hrgui/react-dynamic-json';
+
+export function App() {
+  return (
+    <DynamicJson
+      component="List"
+      props={{ items: '{{items}}' }}
+      variables={{ items: ['apple', 'banana', 'carrot'] }}
+      registry={{
+        List: ({ items }: { items: string[] }) => (
+          <ul>
+            {items.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        ),
       }}
     />
   );
