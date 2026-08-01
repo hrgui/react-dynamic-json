@@ -4,6 +4,10 @@
   "type": "module",
   "version": "0.0.0-publish-with-github-actions-please",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hrgui/react-dynamic-json"
+  },
   "main": "dist/react-dynamic-json.umd.js",
   "module": "dist/react-dynamic-json.es.js",
   "typings": "dist/react-dynamic-json.d.ts",

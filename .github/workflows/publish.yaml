@@ -2,6 +2,11 @@ name: Publish package to npm
 on:
   workflow_dispatch:
     inputs:
+      version:
+        description: 'Version to publish'
+        required: true
+        type: string
+        default: '0.0.0'
       npm_tag:
         description: 'NPM tag to use'
         required: false
@@ -30,6 +35,10 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
+      - run: |
+          if [[ "${{ github.event_name }}" == 'workflow_dispatch' ]]; then
+            npm version --no-git-tag-version "${{ inputs.version }}"
+          fi
       - run: bun run build
       - uses: actions/setup-node@v7
         with:
